@@ -28,20 +28,31 @@ const userSchema = new Schema(
 
 userSchema.post("save", handleMongooseError);
 
-const addSchema = Joi.object({
-  password: Joi.string().required("Set password for user"),
+const registerSchema = Joi.object({
+  password: Joi.string().required(),
   email: Joi.string()
     .email({
       minDomainSegments: 2,
       tlds: { allow: ["com", "net"] },
     })
-    .required("Email is required"),
+    .required(),
 });
 
 
+const loginSchema = Joi.object({
+  password: Joi.string().required(),
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net"] },
+    })
+    .required(),
+});
+
 
 const schemas = {
-  addSchema,
+  registerSchema,
+  loginSchema,
 };
 
 const User = mongoose.model("user", userSchema);

@@ -1,22 +1,25 @@
 const bcrypt = require("bcryptjs");
+const { HttpError } = require("../../helpers");
 
 const { User } = require("../../models").auth;
+
+const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
 
 const register = async (req, res) => {
   const { email, password } = req.body;
 
-  const salt = Number(process.env.SALT_ROUNDS);
+  const user = await User.findOne({ email });
+  if (user) {
+    throw HttpError(409, "Email already in use");
+  }
 
-  const passwordHesh = await bcrypt.hash(password, salt);
+  const passwordHesh = await bcrypt.hash(password, SALT_ROUNDS);
 
-  const result = await User.create({ email, password: passwordHesh });
+  const newUser = await User.create({ ...req.body, password: passwordHesh });
 
-  const user = {
-    email: result.email,
-    subscription: result.subscription,
-  };
-  
-  res.status(201).json({ user });
+  res.status(201).json({
+    user: { email: newUser.email, subscription: newUser.subscription },
+  });
 };
 
 module.exports = register;

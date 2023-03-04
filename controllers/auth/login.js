@@ -4,36 +4,37 @@ const jwt = require("jsonwebtoken");
 const { User } = require("../../models").auth;
 const { HttpError } = require("../../helpers");
 
+const SECRET_KEY = process.env.SECRET_KEY;
+
 const login = async (req, res) => {
-  const result = await User.findOne({
-    email: req.body.email,
+  const { email, password } = req.body;
+  const user = await User.findOne({
+    email,
   });
 
-  if (!result) {
+  if (!user) {
     throw HttpError(401, "Email or password is wrong");
   }
 
-  const compare = await bcrypt.compare(req.body.password, result.password);
+  const compare = await bcrypt.compare(password, user.password);
 
   if (!compare) {
     throw HttpError(401, "Email or password is wrong");
   }
 
-  const user = {
-    email: result.email,
-    subscription: result.subscription,
-  };
-
   const payload = {
-    _id: result._id,
-    email: result.email,
+    _id: user._id,
+    email: user.email,
   };
 
-  const secret = process.env.SECRET;
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
 
-  const token = jwt.sign(payload, secret, { expiresIn: "1h" });
+  await User.findByIdAndUpdate(user._id, { token });
 
-  res.json({ user, token });
+  res.json({
+    user: { email: user.email, subscription: user.subscription },
+    token,
+  });
 };
 
 module.exports = login;
