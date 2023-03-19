@@ -9,7 +9,7 @@ router.post("/register", validateBody(schemas.registerSchema), ctrl.register);
 
 router.get("/verify/:verificationToken", ctrl.verifyEmail);
 
-router.post("/logout", validateBody(schemas.verifySchema), ctrl.verify);
+router.post("/verify", validateBody(schemas.verifySchema), ctrl.verify);
 
 router.get("/login", validateBody(schemas.loginSchema), ctrl.login);
 

@@ -3,6 +3,7 @@ const { User } = require("../../models").auth;
 
 const verifyEmail = async (req, res) => {
   const { verificationToken } = req.params;
+  console.log(verificationToken);
   const result = await User.findOne({ verificationToken });
 
   if (!result) {

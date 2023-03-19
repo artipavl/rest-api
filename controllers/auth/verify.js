@@ -13,14 +13,14 @@ const verify = async (req, res) => {
     throw HttpError(404, "Not found");
   }
 
-  if (!user.verify) {
+  if (user.verify) {
     throw HttpError(404, "Verification has already been passed");
   }
 
   await sendEmail({
     to: email,
     subject: "Verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationToken}">Click verify email</a>`,
+    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${user.verificationToken}">Click verify email</a>`,
   });
 
   res.json({
