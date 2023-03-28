@@ -23,6 +23,14 @@ const userSchema = new Schema(
     },
     token: String,
     avatarURL: String,
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -50,10 +58,20 @@ const loginSchema = Joi.object({
     .required(),
 });
 
+const verifySchema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net"] },
+    })
+    .required(),
+});
+
 
 const schemas = {
   registerSchema,
   loginSchema,
+  verifySchema,
 };
 
 const User = mongoose.model("user", userSchema);

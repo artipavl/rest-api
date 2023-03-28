@@ -9,7 +9,7 @@ mongoose
   .connect(DB_HOST, {
     useNewUrlParser: true,
   })
-  .then(() => {
+  .then(async () => {
     app.listen(PORT, function () {
       console.log(`Server running. Use our API on port: ${PORT}`);
     });
